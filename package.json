@@ -1,0 +1,9 @@
+{
+	"name": "ssw-555-team-1-project",
+	"private": true,
+	"version": "0.0.0",
+	"workspaces": [
+		"frontend",
+		"backend"
+	]
+}
