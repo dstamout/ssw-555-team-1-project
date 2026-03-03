@@ -1,3 +1,33 @@
+Project Overview
+
+This project is a web-based mental health support platform developed for SSW555-Agile Methods for Software Development.
+
+The application allows patients to:
+ - Log daily mood entries
+ - Write journal entries
+ - Tracks habits
+ - Communicate securely with clinicians
+ - Attend telehealth video sessions
+   
+Clinicians can:
+- Monitor patient mood trends
+- Review journal activity
+- Receive alerts for potential risk patterns
+
+Sprint 1 Scope & Completion
+
+During Sprint 1, the team completed:
+
+- Project repository initialization
+- Backend and frontend structure setup
+- MongoDB integration
+- Basic application routing
+- Initial UI scaffolding
+- Core environment configuration
+- Minimal functional prototype deployment
+
+The application is currently a working minimal web app, and additional features will be implemented in Sprint 2.
+
 Prerequisites
 
 Node.js (18+) and npm installed.
