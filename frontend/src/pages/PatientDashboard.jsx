@@ -54,7 +54,8 @@ export default function PatientDashboard() {
 
       <label>Sleep (hours)</label><br />
       <input 
-        type="number" 
+        type="number"
+        placeholder="e.g. 7 hours"
         value={sleep}
         onChange={(e) => setSleep(e.target.value)}
       /><br /><br />
@@ -62,6 +63,7 @@ export default function PatientDashboard() {
       <label>Exercise (minutes)</label><br />
       <input 
         type="number" 
+        placeholder="e.g. 30 minutes"
         value={exercise}
         onChange={(e) => setExercise(e.target.value)}
       /><br /><br />
@@ -69,6 +71,7 @@ export default function PatientDashboard() {
       <label>Water (glasses)</label><br />
       <input 
         type="number" 
+        placeholder="e.g. 8 glasses"
         value={water}
         onChange={(e) => setWater(e.target.value)}
       /><br /><br />
