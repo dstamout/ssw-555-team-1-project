@@ -9,6 +9,7 @@ import usersRouter from './routes/users.js';
 import moodRouter from './routes/mood.js';
 import journalRouter from './routes/journal.js';
 import habitsRouter from './routes/habits.js';
+import jitsiRouter from './routes/jitsi.js';
 import rocketRouter from './routes/rocket.js';
 import pushRouter from './routes/push.js';
 
@@ -38,6 +39,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/mood', moodRouter);
 app.use('/api/journal', journalRouter);
 app.use('/api/habits', habitsRouter);
+app.use('/api/jitsi', jitsiRouter);
 app.use('/api/rocket', rocketRouter);
 app.use('/api/push', pushRouter);
 

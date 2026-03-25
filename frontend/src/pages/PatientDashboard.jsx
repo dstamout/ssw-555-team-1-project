@@ -121,7 +121,7 @@ export default function PatientDashboard() {
       <ul>
         <li><Link to="/patient/mood">Add Mood / Journal</Link></li>
         <li>Messaging (coming soon)</li>
-        <li>Telehealth (coming soon)</li>
+        <li><Link to="/telehealth">Telehealth</Link></li>
       </ul>
 
     </div>
