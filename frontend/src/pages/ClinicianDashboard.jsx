@@ -15,10 +15,10 @@ export default function ClinicianDashboard() {
       {/* Stats (from Lovable idea - QuickStats) */}
       <h3>Quick Stats</h3>
 
-      <div>
-        <p><strong>Average Mood:</strong> 🙂 Good</p>
-        <p><strong>Journal Entries:</strong> 12 this week</p>
-        <p><strong>Active Patients:</strong> 5</p>
+      <div style={{ background: "#f5f5f5", padding: "10px", borderRadius: "8px" }}>
+      <p><strong>Average Mood:</strong> 🙂 Good</p>
+      <p><strong>Journal Entries:</strong> 12 this week</p>
+      <p><strong>Active Patients:</strong> 5</p>
       </div>
 
       <hr />
