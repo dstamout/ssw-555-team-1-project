@@ -29,4 +29,13 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+router.get('/clinicians/all', async (req, res) => {
+  try {
+    const clinicians = await User.find({ role: 'clinician' }).select('name email _id');
+    res.json(clinicians);
+  } catch (err) {
+    res.status(500).json({ error: 'server error' });
+  }
+});
+
 export default router;
