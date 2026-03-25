@@ -11,8 +11,7 @@ export default function ClinicianDashboard() {
       <p>Monitor patient mood and activity</p>
 
       <hr />
-
-      {/* Stats (from Lovable idea - QuickStats) */}
+      
       <h3>Quick Stats</h3>
 
       <div style={{ background: "#f5f5f5", padding: "10px", borderRadius: "8px" }}>
