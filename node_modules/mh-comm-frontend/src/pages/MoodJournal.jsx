@@ -8,8 +8,10 @@ export default function MoodJournal() {
   const submit = async (e) => {
     e.preventDefault();
     // demo: send to backend
+    // ❌ BAD SMELL #1: Hardcoded patientId
     const payload = { patientId: 'demo', mood, intensity, notes };
     try {
+      // ❌ BAD SMELL #2: Duplicate fetch logic
       await fetch('http://localhost:4000/api/mood', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
