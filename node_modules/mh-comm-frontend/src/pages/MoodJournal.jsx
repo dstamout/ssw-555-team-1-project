@@ -8,6 +8,7 @@ export default function MoodJournal() {
 
   const submit = async (e) => {
     e.preventDefault();
+    // FIXED: removed hardcoded patientId
     const payload = {
       patientId: getDemoPatientId(),
       mood,
@@ -16,6 +17,7 @@ export default function MoodJournal() {
     };
 
     try {
+      // FIXED: using reusable API function
       await apiRequest('/api/mood', 'POST', payload);
       alert('Saved (demo)');
     } catch (err) {
