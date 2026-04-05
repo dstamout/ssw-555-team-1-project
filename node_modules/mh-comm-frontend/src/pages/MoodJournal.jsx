@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiRequest, getDemoPatientId } from '../utils/apiClient.js';
 
 export default function MoodJournal() {
   const [mood, setMood] = useState('neutral');
@@ -7,14 +8,15 @@ export default function MoodJournal() {
 
   const submit = async (e) => {
     e.preventDefault();
-    // demo: send to backend
-    const payload = { patientId: 'demo', mood, intensity, notes };
+    const payload = {
+      patientId: getDemoPatientId(),
+      mood,
+      intensity,
+      notes
+    };
+
     try {
-      await fetch('http://localhost:4000/api/mood', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      await apiRequest('/api/mood', 'POST', payload);
       alert('Saved (demo)');
     } catch (err) {
       console.error(err);
@@ -27,7 +29,7 @@ export default function MoodJournal() {
       <h3>Add Mood Entry</h3>
       <form onSubmit={submit}>
         <label>Mood</label>
-        <select value={mood} onChange={e => setMood(e.target.value)}>
+        <select value={mood} onChange={(e) => setMood(e.target.value)}>
           <option value="happy">Happy</option>
           <option value="neutral">Neutral</option>
           <option value="sad">Sad</option>
@@ -35,10 +37,16 @@ export default function MoodJournal() {
         </select>
         <br />
         <label>Intensity: {intensity}</label>
-        <input type="range" min="0" max="10" value={intensity} onChange={e => setIntensity(Number(e.target.value))} />
+        <input
+          type="range"
+          min="0"
+          max="10"
+          value={intensity}
+          onChange={(e) => setIntensity(Number(e.target.value))}
+        />
         <br />
         <label>Notes</label>
-        <textarea value={notes} onChange={e => setNotes(e.target.value)} />
+        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
         <br />
         <button type="submit">Save</button>
       </form>

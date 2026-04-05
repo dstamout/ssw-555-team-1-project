@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { apiRequest, getDemoPatientId } from '../utils/apiClient.js';
 
 export default function PatientDashboard() {
   const [mood, setMood] = useState(2);
@@ -12,18 +13,14 @@ export default function PatientDashboard() {
 
   const handleSave = async () => {
     const habitData = {
-      patientId: 'demo-patient-id', 
+      patientId: getDemoPatientId(),
       sleepHours: parseFloat(sleep) || 0,
       exerciseMinutes: parseInt(exercise) || 0,
       waterGlasses: parseInt(water) || 0,
       medicationTaken: medication,
     };
     try {
-      const response = await fetch('http://localhost:4000/api/habits', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(habitData),
-      });
+      const response = await apiRequest('/api/habits', 'POST', habitData);
       if (response.ok) {
         alert("Habits logged! Keep it up 💪");
         setSleep("");

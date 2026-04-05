@@ -1,4 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { apiRequest, getDemoPatientId } from '../utils/apiClient.js';
+
+const getDemoClinicianId = () => {
+  let id = localStorage.getItem('demoClinicianId');
+  if (!id) {
+    id = Array.from({ length: 24 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+    localStorage.setItem('demoClinicianId', id);
+  }
+  return id;
+};
 
 export default function Appointments() {
   const [role, setRole] = useState('patient'); 
@@ -12,16 +22,8 @@ export default function Appointments() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const getDemoId = (key) => {
-    let id = localStorage.getItem(key);
-    if (!id) {
-      id = Array.from({ length: 24 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-      localStorage.setItem(key, id);
-    }
-    return id;
-  };
-  const demoPatientId = getDemoId('demoPatientId');
-  const demoClinicianId = getDemoId('demoClinicianId');
+  const demoPatientId = getDemoPatientId();
+  const demoClinicianId = getDemoClinicianId();
 
   useEffect(() => {
     if (role === 'clinician') {
@@ -32,7 +34,7 @@ export default function Appointments() {
 
   const fetchClinicians = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/users/clinicians/all');
+      const response = await apiRequest('/api/users/clinicians/all', 'GET');
       if (response.ok) {
         const data = await response.json();
         setClinicians(data);
@@ -45,7 +47,7 @@ export default function Appointments() {
   const fetchAppointments = async () => {
     try {
       const userId = role === 'clinician' ? demoClinicianId : demoPatientId;
-      const response = await fetch(`http://localhost:4000/api/appointments?userId=${userId}&role=${role}`);
+      const response = await apiRequest(`/api/appointments?userId=${userId}&role=${role}`, 'GET');
       if (response.ok) {
         const data = await response.json();
         setAppointments(data);
@@ -61,15 +63,11 @@ export default function Appointments() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:4000/api/appointments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          patientId: demoPatientId,
-          clinicianId: formData.clinicianId,
-          requestedDate: formData.requestedDate,
-          notes: formData.notes,
-        }),
+      const response = await apiRequest('/api/appointments', 'POST', {
+        patientId: demoPatientId,
+        clinicianId: formData.clinicianId,
+        requestedDate: formData.requestedDate,
+        notes: formData.notes,
       });
 
       if (response.ok) {
@@ -89,11 +87,7 @@ export default function Appointments() {
 
   const handleStatusUpdate = async (id, status) => {
     try {
-      const response = await fetch(`http://localhost:4000/api/appointments/${id}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
-      });
+      const response = await apiRequest(`/api/appointments/${id}/status`, 'PUT', { status });
 
       if (response.ok) {
         fetchAppointments();
