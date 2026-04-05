@@ -1,4 +1,3 @@
-// FIX #1: Extracted helper to keep patientId generation in one place so the component no longer hardcodes patientId
 export const getDemoPatientId = () => {
   let patientId = localStorage.getItem('demoPatientId');
   if (!patientId) {
@@ -8,7 +7,6 @@ export const getDemoPatientId = () => {
   return patientId;
 };
 
-// FIX #2: Extracted apiRequest helper to remove duplicate fetch 
 export const apiRequest = async (url, method = 'GET', data = null) => {
   const options = {
     method,

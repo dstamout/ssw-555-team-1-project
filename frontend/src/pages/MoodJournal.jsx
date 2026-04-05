@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { apiRequest, getDemoPatientId } from '../utils/moodApi.js';
+import { apiRequest, getDemoPatientId } from '../utils/apiClient.js';
 
 export default function MoodJournal() {
   const [mood, setMood] = useState('neutral');
@@ -8,7 +8,6 @@ export default function MoodJournal() {
 
   const submit = async (e) => {
     e.preventDefault();
-    // FIXED: removed hardcoded patientId
     const payload = {
       patientId: getDemoPatientId(),
       mood,
@@ -17,7 +16,6 @@ export default function MoodJournal() {
     };
 
     try {
-      // FIXED: using reusable API function
       await apiRequest('/api/mood', 'POST', payload);
       alert('Saved (demo)');
     } catch (err) {

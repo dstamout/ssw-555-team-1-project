@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiRequest } from '../utils/apiClient.js';
 
 export default function Telehealth() {
   const [roomName, setRoomName] = useState('');
@@ -15,11 +16,7 @@ export default function Telehealth() {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('http://localhost:4000/api/jitsi/room', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roomName, userName }),
-      });
+      const response = await apiRequest('/api/jitsi/room', 'POST', { roomName, userName });
       if (response.ok) {
         const data = await response.json();
         setMeetingUrl(data.url);
