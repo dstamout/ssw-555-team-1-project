@@ -100,94 +100,103 @@ export default function Appointments() {
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: 'auto' }}>
-      <h1>Appointments</h1>
+    <div className="page-container">
+      <div className="card">
+        <h1>Appointments</h1>
+        <p>Request new sessions or review appointment status from the clinician side.</p>
+      </div>
 
-      <div style={{ marginBottom: '20px' }}>
-        <label>
-          <input
-            type="radio"
-            value="patient"
-            checked={role === 'patient'}
-            onChange={(e) => setRole(e.target.value)}
-          />
-          Patient View
-        </label>
-        <label style={{ marginLeft: '20px' }}>
-          <input
-            type="radio"
-            value="clinician"
-            checked={role === 'clinician'}
-            onChange={(e) => setRole(e.target.value)}
-          />
-          Clinician View
-        </label>
+      <div className="card">
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center' }}>
+          <div>
+            <label>
+              <input
+                type="radio"
+                value="patient"
+                checked={role === 'patient'}
+                onChange={(e) => setRole(e.target.value)}
+              />
+              Patient View
+            </label>
+          </div>
+          <div>
+            <label>
+              <input
+                type="radio"
+                value="clinician"
+                checked={role === 'clinician'}
+                onChange={(e) => setRole(e.target.value)}
+              />
+              Clinician View
+            </label>
+          </div>
+        </div>
       </div>
 
       {role === 'patient' && (
-        <div>
+        <div className="card">
           <h2>Request Appointment</h2>
-          <form onSubmit={handleRequest}>
-            <div>
-              <label>Clinician:</label>
-              <select
-                value={formData.clinicianId}
-                onChange={(e) => setFormData({ ...formData, clinicianId: e.target.value })}
-                required
-              >
-                <option value="">Select Clinician</option>
-                {clinicians.map((clinician) => (
-                  <option key={clinician._id} value={clinician._id}>
-                    {clinician.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>Requested Date:</label>
-              <input
-                type="datetime-local"
-                value={formData.requestedDate}
-                onChange={(e) => setFormData({ ...formData, requestedDate: e.target.value })}
-                required
-              />
-            </div>
-            <div>
-              <label>Notes:</label>
-              <textarea
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                rows="3"
-              />
-            </div>
-            <button type="submit" disabled={loading}>
-              {loading ? 'Requesting...' : 'Request Appointment'}
-            </button>
-          </form>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
+          <div className="form-group">
+            <label>Clinician</label>
+            <select
+              value={formData.clinicianId}
+              onChange={(e) => setFormData({ ...formData, clinicianId: e.target.value })}
+              required
+            >
+              <option value="">Select Clinician</option>
+              {clinicians.map((clinician) => (
+                <option key={clinician._id} value={clinician._id}>
+                  {clinician.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Requested Date</label>
+            <input
+              type="datetime-local"
+              value={formData.requestedDate}
+              onChange={(e) => setFormData({ ...formData, requestedDate: e.target.value })}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Notes</label>
+            <textarea
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              rows="4"
+            />
+          </div>
+          <button type="submit" onClick={handleRequest} disabled={loading}>
+            {loading ? 'Requesting...' : 'Request Appointment'}
+          </button>
+          {error && <p className="alert-box" style={{ marginTop: '16px' }}>{error}</p>}
         </div>
       )}
 
-      <h2>Your Appointments</h2>
-      {appointments.length === 0 ? (
-        <p>No appointments found.</p>
-      ) : (
-        <ul>
-          {appointments.map((appt) => (
-            <li key={appt._id} style={{ marginBottom: '10px', padding: '10px', border: '1px solid #ccc' }}>
-              <p><strong>Date:</strong> {new Date(appt.requestedDate).toLocaleString()}</p>
-              <p><strong>Status:</strong> {appt.status}</p>
-              <p><strong>Notes:</strong> {appt.notes || 'None'}</p>
-              {role === 'clinician' && appt.status === 'requested' && (
-                <div>
-                  <button onClick={() => handleStatusUpdate(appt._id, 'approved')}>Approve</button>
-                  <button onClick={() => handleStatusUpdate(appt._id, 'declined')} style={{ marginLeft: '10px' }}>Decline</button>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="card">
+        <h2>Your Appointments</h2>
+        {appointments.length === 0 ? (
+          <p>No appointments found.</p>
+        ) : (
+          <ul className="card-list">
+            {appointments.map((appt) => (
+              <li key={appt._id} className="card-item">
+                <p><strong>Date:</strong> {new Date(appt.requestedDate).toLocaleString()}</p>
+                <p><strong>Status:</strong> <span className={`status-pill status-${appt.status}`}>{appt.status}</span></p>
+                <p><strong>Notes:</strong> {appt.notes || 'None'}</p>
+                {role === 'clinician' && appt.status === 'requested' && (
+                  <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+                    <button onClick={() => handleStatusUpdate(appt._id, 'approved')} className="secondary">Approve</button>
+                    <button onClick={() => handleStatusUpdate(appt._id, 'declined')} className="secondary">Decline</button>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

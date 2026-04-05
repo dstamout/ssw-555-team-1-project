@@ -9,13 +9,26 @@ import Appointments from './pages/Appointments';
 
 export default function App() {
   return (
-    <div>
-      <nav style={{ padding: 12, borderBottom: '1px solid #ddd' }}>
-        <Link to="/">Home</Link> | <Link to="/login">Login</Link> | <Link to="/patient">Patient</Link> | <Link to="/clinician">Clinician</Link> | <Link to="/appointments">Appointments</Link> | <Link to="/telehealth">Telehealth</Link>
-      </nav>
-      <main style={{ padding: 12 }}>
+    <div className="app-shell">
+      <header className="site-header">
+        <div className="brand">MH Comm</div>
+        <nav>
+          <Link to="/">Home</Link>
+          <Link to="/login">Login</Link>
+          <Link to="/patient">Patient</Link>
+          <Link to="/clinician">Clinician</Link>
+          <Link to="/appointments">Appointments</Link>
+          <Link to="/telehealth">Telehealth</Link>
+        </nav>
+      </header>
+      <main>
         <Routes>
-          <Route path="/" element={<div>Welcome to MH Comm App</div>} />
+          <Route path="/" element={
+            <div className="page-container">
+              <h1>Welcome to MH Comm</h1>
+              <p>Secure mental health tracking, appointments, and telehealth in one friendly space.</p>
+            </div>
+          } />
           <Route path="/login" element={<Login />} />
           <Route path="/patient" element={<PatientDashboard />} />
           <Route path="/patient/mood" element={<MoodJournal />} />

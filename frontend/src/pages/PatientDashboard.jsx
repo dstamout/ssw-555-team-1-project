@@ -36,91 +36,84 @@ export default function PatientDashboard() {
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial", maxWidth: "600px", margin: "auto" }}>
-
-      {/* Welcome Banner */}
-      <h1>Welcome Back 👋</h1>
-      <p>Track your mood and habits daily</p>
-
-      <hr />
-
-      {/* Mood Slider */}
-      <h3>How are you feeling today?</h3>
-
-      <div style={{ textAlign: "center" }}>
-        <span style={{ fontSize: "40px" }}>
-          {moodLabels[mood].split(" ")[0]}
-        </span>
-        <p>{moodLabels[mood]}</p>
+    <div className="page-container">
+      <div className="card">
+        <h1>Welcome Back 👋</h1>
+        <p>Track your mood and habits daily, and stay connected to your clinician.</p>
       </div>
 
-      <input
-        type="range"
-        min="0"
-        max="4"
-        step="1"
-        value={mood}
-        onChange={(e) => setMood(Number(e.target.value))}
-        style={{ width: "100%" }}
-      />
-
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <span>Very Low</span>
-        <span>Great</span>
+      <div className="card">
+        <h2>How are you feeling today?</h2>
+        <div className="form-group" style={{ textAlign: 'center' }}>
+          <span style={{ fontSize: '44px' }}>{moodLabels[mood].split(' ')[0]}</span>
+          <p>{moodLabels[mood]}</p>
+        </div>
+        <div className="form-group">
+          <input
+            type="range"
+            min="0"
+            max="4"
+            step="1"
+            value={mood}
+            onChange={(e) => setMood(Number(e.target.value))}
+          />
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span>Very Low</span>
+            <span>Great</span>
+          </div>
+        </div>
       </div>
 
-      <hr />
+      <div className="card">
+        <h2>Daily Habit Tracker</h2>
+        <div className="form-group">
+          <label>Sleep (hours)</label>
+          <input
+            type="number"
+            placeholder="e.g. 7"
+            value={sleep}
+            onChange={(e) => setSleep(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>Exercise (minutes)</label>
+          <input
+            type="number"
+            placeholder="e.g. 30"
+            value={exercise}
+            onChange={(e) => setExercise(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>Water (glasses)</label>
+          <input
+            type="number"
+            placeholder="e.g. 8"
+            value={water}
+            onChange={(e) => setWater(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>
+            <input
+              type="checkbox"
+              checked={medication}
+              onChange={(e) => setMedication(e.target.checked)}
+            />
+            Medication taken today
+          </label>
+        </div>
+        <button onClick={handleSave}>Log Today's Habits</button>
+      </div>
 
-      {/* Habit Tracker */}
-      <h3>Daily Habits</h3>
-
-      <label>Sleep (hours)</label><br />
-      <input 
-        type="number"
-        placeholder="e.g. 7 hours"
-        value={sleep}
-        onChange={(e) => setSleep(e.target.value)}
-      /><br /><br />
-
-      <label>Exercise (minutes)</label><br />
-      <input 
-        type="number" 
-        placeholder="e.g. 30 minutes"
-        value={exercise}
-        onChange={(e) => setExercise(e.target.value)}
-      /><br /><br />
-
-      <label>Water (glasses)</label><br />
-      <input 
-        type="number" 
-        placeholder="e.g. 8 glasses"
-        value={water}
-        onChange={(e) => setWater(e.target.value)}
-      /><br /><br />
-
-      <label>
-        <input 
-          type="checkbox"
-          checked={medication}
-          onChange={(e) => setMedication(e.target.checked)}
-        />
-        Medication taken today
-      </label><br /><br />
-
-      <button onClick={handleSave}>
-        Log Today's Habits
-      </button>
-
-      <hr />
-
-      {/* Navigation */}
-      <h3>More Features</h3>
-      <ul>
-        <li><Link to="/patient/mood">Add Mood / Journal</Link></li>
-        <li>Messaging (coming soon)</li>
-        <li><Link to="/telehealth">Telehealth</Link></li>
-      </ul>
-
+      <div className="card">
+        <h2>Quick Links</h2>
+        <ul className="link-list">
+          <li><Link to="/patient/mood">Add Mood / Journal</Link></li>
+          <li>Messaging (coming soon)</li>
+          <li><Link to="/telehealth">Telehealth</Link></li>
+        </ul>
+      </div>
     </div>
   );
 }

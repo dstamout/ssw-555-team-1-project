@@ -2,40 +2,39 @@ import React from 'react';
 
 export default function ClinicianDashboard() {
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial", maxWidth: "600px", margin: "auto" }}>
-
-      <h2>Clinician Dashboard</h2>
-
-      {/* Welcome */}
-      <h3>Patient Overview</h3>
-      <p>Monitor patient mood and activity</p>
-
-      <hr />
-      
-      <h3>Quick Stats</h3>
-
-      <div style={{ background: "#f5f5f5", padding: "10px", borderRadius: "8px" }}>
-      <p><strong>Average Mood:</strong> 🙂 Good</p>
-      <p><strong>Journal Entries:</strong> 12 this week</p>
-      <p><strong>Active Patients:</strong> 5</p>
+    <div className="page-container">
+      <div className="card">
+        <h1>Clinician Dashboard</h1>
+        <p>Monitor patient wellness, review trends, and manage care from one place.</p>
       </div>
 
-      <hr />
+      <div className="stats-grid">
+        <div className="stats-card">
+          <strong>Average Mood</strong>
+          <p>🙂 Good</p>
+        </div>
+        <div className="stats-card">
+          <strong>Journal Entries</strong>
+          <p>12 this week</p>
+        </div>
+        <div className="stats-card">
+          <strong>Active Patients</strong>
+          <p>5</p>
+        </div>
+      </div>
 
-      {/* Risk Alerts */}
-      <h3>Risk Alerts</h3>
+      <div className="card">
+        <h2>Risk Alerts</h2>
+        <div className="alert-box">
+          <p>⚠ <strong>Patient A</strong> has low mood for 3 days.</p>
+          <p>⚠ <strong>Patient B</strong> flagged keywords in their journal.</p>
+        </div>
+      </div>
 
-      <ul>
-        <li>⚠ Patient A has low mood for 3 days</li>
-        <li>⚠ Patient B flagged keywords in journal</li>
-      </ul>
-
-      <hr />
-
-      {/* Placeholder for future charts */}
-      <h3>Trends (Coming Soon)</h3>
-      <p>Mood and habit charts will be displayed here.</p>
-
+      <div className="card">
+        <h2>Trends (Coming Soon)</h2>
+        <p>Mood and habit charts will appear here once data tracking is connected.</p>
+      </div>
     </div>
   );
 }

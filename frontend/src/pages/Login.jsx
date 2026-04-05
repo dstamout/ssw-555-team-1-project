@@ -6,20 +6,36 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <button onClick={startGoogle}>Sign in with Google</button>
-      <hr />
-      <div>
-        <p>Or register (demo):</p>
+    <div className="page-container">
+      <div className="card">
+        <h1>Login</h1>
+        <p>Access your mental health dashboard and telehealth sessions.</p>
+      </div>
+
+      <div className="card">
+        <button onClick={startGoogle}>Sign in with Google</button>
+      </div>
+
+      <div className="card">
+        <h2>Demo Registration</h2>
+        <p>Use this demo form for local testing.</p>
         <form onSubmit={(e) => e.preventDefault()}>
-          <input name="email" placeholder="email" />
-          <input name="password" type="password" placeholder="password" />
-          <select name="role">
-            <option value="patient">Patient</option>
-            <option value="clinician">Clinician</option>
-          </select>
-          <button type="submit">Register (demo)</button>
+          <div className="form-group">
+            <label>Email</label>
+            <input name="email" placeholder="email" />
+          </div>
+          <div className="form-group">
+            <label>Password</label>
+            <input name="password" type="password" placeholder="password" />
+          </div>
+          <div className="form-group">
+            <label>Role</label>
+            <select name="role">
+              <option value="patient">Patient</option>
+              <option value="clinician">Clinician</option>
+            </select>
+          </div>
+          <button type="submit" className="secondary">Register (demo)</button>
         </form>
       </div>
     </div>

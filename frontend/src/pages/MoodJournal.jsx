@@ -25,31 +25,43 @@ export default function MoodJournal() {
   };
 
   return (
-    <div>
-      <h3>Add Mood Entry</h3>
-      <form onSubmit={submit}>
-        <label>Mood</label>
-        <select value={mood} onChange={(e) => setMood(e.target.value)}>
-          <option value="happy">Happy</option>
-          <option value="neutral">Neutral</option>
-          <option value="sad">Sad</option>
-          <option value="anxious">Anxious</option>
-        </select>
-        <br />
-        <label>Intensity: {intensity}</label>
-        <input
-          type="range"
-          min="0"
-          max="10"
-          value={intensity}
-          onChange={(e) => setIntensity(Number(e.target.value))}
-        />
-        <br />
-        <label>Notes</label>
-        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
-        <br />
-        <button type="submit">Save</button>
-      </form>
+    <div className="page-container">
+      <div className="card">
+        <h1>Add Mood Entry</h1>
+        <p>Record how you feel today and share notes for your clinician.</p>
+      </div>
+
+      <div className="card">
+        <form onSubmit={submit}>
+          <div className="form-group">
+            <label>Mood</label>
+            <select value={mood} onChange={(e) => setMood(e.target.value)}>
+              <option value="happy">Happy</option>
+              <option value="neutral">Neutral</option>
+              <option value="sad">Sad</option>
+              <option value="anxious">Anxious</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>Intensity: {intensity}</label>
+            <input
+              type="range"
+              min="0"
+              max="10"
+              value={intensity}
+              onChange={(e) => setIntensity(Number(e.target.value))}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Notes</label>
+            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows="5" />
+          </div>
+
+          <button type="submit">Save</button>
+        </form>
+      </div>
     </div>
   );
 }
