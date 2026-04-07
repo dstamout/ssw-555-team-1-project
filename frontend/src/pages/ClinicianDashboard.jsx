@@ -1,6 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getAuthUser, isAuthorized } from '../utils/auth.js';
 
 export default function ClinicianDashboard() {
+  const [authorized, setAuthorized] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
+
+  useEffect(() => {
+    const user = getAuthUser();
+    if (!user) {
+      setStatusMessage('Access forbidden: please sign in as a clinician.');
+      setAuthorized(false);
+      return;
+    }
+    if (!isAuthorized(['clinician'])) {
+      setStatusMessage(`Access forbidden: signed in as ${user.role}. Clinician access only.`);
+      setAuthorized(false);
+      return;
+    }
+    setAuthorized(true);
+  }, []);
+
+  if (!authorized) {
+    return (
+      <div className="page-container">
+        <div className="card">
+          <h1>Access Forbidden</h1>
+          <p>{statusMessage}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page-container">
       <div className="card">

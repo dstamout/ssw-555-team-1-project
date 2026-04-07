@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { apiRequest, getDemoPatientId } from '../utils/apiClient.js';
+import { getAuthUser, isAuthorized } from '../utils/auth.js';
 
 export default function PatientDashboard() {
   const [mood, setMood] = useState(2);
@@ -8,6 +9,34 @@ export default function PatientDashboard() {
   const [exercise, setExercise] = useState("");
   const [water, setWater] = useState("");
   const [medication, setMedication] = useState(false);
+  const [authorized, setAuthorized] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
+
+  useEffect(() => {
+    const user = getAuthUser();
+    if (!user) {
+      setStatusMessage('Access forbidden: please sign in as a patient.');
+      setAuthorized(false);
+      return;
+    }
+    if (!isAuthorized(['patient'])) {
+      setStatusMessage(`Access forbidden: signed in as ${user.role}. Patient access only.`);
+      setAuthorized(false);
+      return;
+    }
+    setAuthorized(true);
+  }, []);
+
+  if (!authorized) {
+    return (
+      <div className="page-container">
+        <div className="card">
+          <h1>Access Forbidden</h1>
+          <p>{statusMessage}</p>
+        </div>
+      </div>
+    );
+  }
 
   const moodLabels = ["😞 Very Low", "😕 Low", "😐 Okay", "🙂 Good", "😊 Great"];
 

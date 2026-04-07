@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiRequest, getDemoPatientId } from '../utils/apiClient.js';
+import { getAuthUser, isAuthorized } from '../utils/auth.js';
 
 const getDemoClinicianId = () => {
   let id = localStorage.getItem('demoClinicianId');
@@ -11,7 +12,8 @@ const getDemoClinicianId = () => {
 };
 
 export default function Appointments() {
-  const [role, setRole] = useState('patient'); 
+  const [role, setRole] = useState(null);
+  const [user, setUser] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [clinicians, setClinicians] = useState([]);
   const [formData, setFormData] = useState({
@@ -21,16 +23,48 @@ export default function Appointments() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [authorized, setAuthorized] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
 
   const demoPatientId = getDemoPatientId();
   const demoClinicianId = getDemoClinicianId();
 
   useEffect(() => {
+    const authUser = getAuthUser();
+    if (!authUser) {
+      setStatusMessage('Access forbidden: please sign in as a patient or clinician.');
+      setAuthorized(false);
+      return;
+    }
+    if (!isAuthorized(['patient', 'clinician'])) {
+      setStatusMessage(`Access forbidden: signed in as ${authUser.role}.`);
+      setAuthorized(false);
+      return;
+    }
+
+    setUser(authUser);
+    setRole(authUser.role);
+    setAuthorized(true);
+  }, []);
+
+  useEffect(() => {
+    if (!authorized || !role) return;
     if (role === 'clinician') {
       fetchClinicians();
     }
-    fetchAppointments();
-  }, [role]);
+    fetchAppointments(role);
+  }, [role, authorized]);
+
+  if (!authorized) {
+    return (
+      <div className="page-container">
+        <div className="card">
+          <h1>Access Forbidden</h1>
+          <p>{statusMessage}</p>
+        </div>
+      </div>
+    );
+  }
 
   const fetchClinicians = async () => {
     try {
@@ -44,10 +78,11 @@ export default function Appointments() {
     }
   };
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = async (currentRole = role) => {
     try {
-      const userId = role === 'clinician' ? demoClinicianId : demoPatientId;
-      const response = await apiRequest(`/api/appointments?userId=${userId}&role=${role}`, 'GET');
+      const authId = user?.id;
+      const userId = authId || (currentRole === 'clinician' ? demoClinicianId : demoPatientId);
+      const response = await apiRequest(`/api/appointments?userId=${userId}&role=${currentRole}`, 'GET');
       if (response.ok) {
         const data = await response.json();
         setAppointments(data);
@@ -64,7 +99,7 @@ export default function Appointments() {
 
     try {
       const response = await apiRequest('/api/appointments', 'POST', {
-        patientId: demoPatientId,
+        patientId: user?.id || demoPatientId,
         clinicianId: formData.clinicianId,
         requestedDate: formData.requestedDate,
         notes: formData.notes,
@@ -104,33 +139,6 @@ export default function Appointments() {
       <div className="card">
         <h1>Appointments</h1>
         <p>Request new sessions or review appointment status from the clinician side.</p>
-      </div>
-
-      <div className="card">
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center' }}>
-          <div>
-            <label>
-              <input
-                type="radio"
-                value="patient"
-                checked={role === 'patient'}
-                onChange={(e) => setRole(e.target.value)}
-              />
-              Patient View
-            </label>
-          </div>
-          <div>
-            <label>
-              <input
-                type="radio"
-                value="clinician"
-                checked={role === 'clinician'}
-                onChange={(e) => setRole(e.target.value)}
-              />
-              Clinician View
-            </label>
-          </div>
-        </div>
       </div>
 
       {role === 'patient' && (

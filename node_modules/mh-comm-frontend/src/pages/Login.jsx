@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiRequest } from '../utils/apiClient';
+import { getAuthUser, logout } from '../utils/auth.js';
 
 export default function Login() {
   const [mode, setMode] = useState('login');
   const [form, setForm] = useState({ email: '', password: '', role: 'patient' });
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState(getAuthUser());
   const navigate = useNavigate();
 
   const startGoogle = () => {
@@ -68,6 +70,26 @@ export default function Login() {
       <div className="card">
         <button onClick={startGoogle}>Sign in with Google</button>
       </div>
+
+      {currentUser && (
+        <div className="card">
+          <h2>Current session</h2>
+          <p>
+            Signed in as <strong>{currentUser.email}</strong> ({currentUser.role})
+          </p>
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => {
+              logout();
+              setCurrentUser(null);
+              setMessage('Signed out successfully.');
+            }}
+          >
+            Sign out
+          </button>
+        </div>
+      )}
 
       <div className="card">
         <div className="toggle-buttons">
