@@ -5,7 +5,9 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const { patient, clinician, startTime, endTime, notes } = req.body;
+    const patient = req.body.patient || req.body.patientId;
+    const clinician = req.body.clinician || req.body.clinicianId;
+    const { startTime, endTime, notes } = req.body;
 
     // Validation
     if (!patient || !clinician || !startTime || !endTime) {
@@ -51,7 +53,17 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const appointments = await Appointment.find()
+    const { userId, role } = req.query;
+    const query = {};
+
+    if (userId && role === 'patient') {
+      query.patient = userId;
+    }
+    if (userId && role === 'clinician') {
+      query.clinician = userId;
+    }
+
+    const appointments = await Appointment.find(query)
       .populate("patient clinician");
 
     res.json(appointments);

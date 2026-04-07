@@ -84,6 +84,15 @@ router.get(
   }
 );
 
+router.get('/clinicians', async (req, res) => {
+  try {
+    const clinicians = await User.find({ role: 'clinician' }).select('_id email displayName role');
+    res.json(clinicians);
+  } catch (err) {
+    res.status(500).json({ msg: 'Failed to load clinicians', error: err.message });
+  }
+});
+
 router.get('/me', authenticateJWT, (req, res) => {
   res.json({ user: req.user });
 });

@@ -49,7 +49,7 @@ export default function Appointments() {
 
   useEffect(() => {
     if (!authorized || !role) return;
-    if (role === 'clinician') {
+    if (role === 'patient') {
       fetchClinicians();
     }
     fetchAppointments(role);
@@ -68,7 +68,7 @@ export default function Appointments() {
 
   const fetchClinicians = async () => {
     try {
-      const response = await apiRequest('/api/users/clinicians/all', 'GET');
+      const response = await apiRequest('/api/users/clinicians', 'GET');
       if (response.ok) {
         const data = await response.json();
         setClinicians(data);
@@ -81,7 +81,7 @@ export default function Appointments() {
   const fetchAppointments = async (currentRole = role) => {
     try {
       const authId = user?.id;
-      const userId = authId || (currentRole === 'clinician' ? demoClinicianId : demoPatientId);
+      const userId = authId;
       const response = await apiRequest(`/api/appointments?userId=${userId}&role=${currentRole}`, 'GET');
       if (response.ok) {
         const data = await response.json();
@@ -99,9 +99,10 @@ export default function Appointments() {
 
     try {
       const response = await apiRequest('/api/appointments', 'POST', {
-        patientId: user?.id || demoPatientId,
-        clinicianId: formData.clinicianId,
-        requestedDate: formData.requestedDate,
+        patient: user?.id,
+        clinician: formData.clinicianId,
+        startTime: formData.requestedDate,
+        endTime: formData.requestedDate,
         notes: formData.notes,
       });
 
@@ -122,23 +123,37 @@ export default function Appointments() {
 
   const handleStatusUpdate = async (id, status) => {
     try {
-      const response = await apiRequest(`/api/appointments/${id}/status`, 'PUT', { status });
+      const path = status === 'approved' ? `/api/appointments/${id}/approve` : `/api/appointments/${id}/decline`;
+      const response = await apiRequest(path, 'PUT');
 
       if (response.ok) {
         fetchAppointments();
       } else {
-        alert('Error updating status');
+        const errorData = await response.json();
+        alert(errorData.message || 'Error updating status');
       }
     } catch (err) {
       console.error('Error updating status:', err);
+      alert('Error updating status');
     }
+  };
+
+  const formatAppointmentDate = (appt) => {
+    const dateValue = appt.startTime || appt.requestedDate || appt.createdAt;
+    const date = new Date(dateValue);
+    return Number.isNaN(date.getTime()) ? 'Unknown date' : date.toLocaleString();
+  };
+
+  const formatUserDisplay = (user) => {
+    if (!user) return 'Unknown';
+    return user.displayName || user.email || user.role || 'Unknown';
   };
 
   return (
     <div className="page-container">
       <div className="card">
         <h1>Appointments</h1>
-        <p>Request new sessions or review appointment status from the clinician side.</p>
+        <p>{role === 'patient' ? 'Request new appointments here.' : 'Review and approve/decline appointment slots here.'}</p>
       </div>
 
       {role === 'patient' && (
@@ -154,7 +169,7 @@ export default function Appointments() {
               <option value="">Select Clinician</option>
               {clinicians.map((clinician) => (
                 <option key={clinician._id} value={clinician._id}>
-                  {clinician.name}
+                  {clinician.displayName || clinician.email || 'Clinician'}
                 </option>
               ))}
             </select>
@@ -191,7 +206,9 @@ export default function Appointments() {
           <ul className="card-list">
             {appointments.map((appt) => (
               <li key={appt._id} className="card-item">
-                <p><strong>Date:</strong> {new Date(appt.requestedDate).toLocaleString()}</p>
+                <p><strong>Date:</strong> {formatAppointmentDate(appt)}</p>
+                <p><strong>Patient:</strong> {formatUserDisplay(appt.patient)}</p>
+                <p><strong>Clinician:</strong> {formatUserDisplay(appt.clinician)}</p>
                 <p><strong>Status:</strong> <span className={`status-pill status-${appt.status}`}>{appt.status}</span></p>
                 <p><strong>Notes:</strong> {appt.notes || 'None'}</p>
                 {role === 'clinician' && appt.status === 'requested' && (
