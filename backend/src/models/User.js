@@ -1,38 +1,92 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import passport from 'passport';
+import User from '../models/User.js';
+import { authenticateJWT } from '../middleware/authMiddleware.js';
 
-const { Schema } = mongoose;
+const router = express.Router();
 
-const UserSchema = new Schema({
-  email: { type: String, required: true, unique: true },
-  password: { type: String },
-  role: { type: String, enum: ['patient', 'clinician'], required: true },
-  displayName: { type: String },
-  googleId: { type: String },
-  trustedContacts: [{ type: String }],
-  pushTokens: [{ type: String }],
-  createdAt: { type: Date, default: Date.now }
-});
+router.post('/signup', async (req, res) => {
+  try {
+    const { email, password, displayName, role } = req.body;
+    if (!email || !password) return res.status(400).json({ msg: 'Email & password required' });
 
-// Pre-save hook to hash password if it was modified
-UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next(); // skip if password not changed
+    const existingUser = await User.findOne({ email });
+    if (existingUser) return res.status(400).json({ msg: 'User already exists' });
 
-  if (this.password) {
-    try {
-      const salt = await bcrypt.genSalt(10);
-      this.password = await bcrypt.hash(this.password, salt);
-    } catch (err) {
-      return next(err);
-    }
+    const user = new User({
+      email,
+      password, // hashed automatically by your User model pre-save hook
+      displayName: displayName || 'Anonymous',
+      role: role || 'patient',
+    });
+
+    await user.save();
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    res.json({
+      user: { id: user._id, email: user.email, displayName: user.displayName, role: user.role },
+      token
+    });
+  } catch (err) {
+    res.status(500).json({ msg: 'Signup failed', error: err.message });
   }
-  next();
 });
 
-// Method to compare password during login
-UserSchema.methods.comparePassword = async function (candidatePassword) {
-  if (!this.password) return false; // for Google OAuth users
-  return bcrypt.compare(candidatePassword, this.password);
-};
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ msg: 'Email & password required' });
 
-export default mongoose.models.User || mongoose.model('User', UserSchema);
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ msg: 'Invalid credentials' });
+
+    const match = await user.comparePassword(password); // uses your model method
+    if (!match) return res.status(400).json({ msg: 'Invalid credentials' });
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    res.json({
+      user: { id: user._id, email: user.email, displayName: user.displayName, role: user.role },
+      token
+    });
+  } catch (err) {
+    res.status(500).json({ msg: 'Login failed', error: err.message });
+  }
+});
+
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { session: false }),
+  (req, res) => {
+    const token = jwt.sign(
+      { id: req.user.id, role: req.user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    res.json({
+      message: 'Google OAuth login successful',
+      user: req.user,
+      token
+    });
+  }
+);
+
+
+router.get('/me', authenticateJWT, (req, res) => {
+  res.json({ user: req.user });
+});
+
+export default router;
