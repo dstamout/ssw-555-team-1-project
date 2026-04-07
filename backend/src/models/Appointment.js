@@ -5,9 +5,26 @@ const { Schema } = mongoose;
 const AppointmentSchema = new Schema({
   patient: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   clinician: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  requestedDate: { type: Date, required: true },
-  status: { type: String, enum: ['requested', 'approved', 'declined'], default: 'requested' },
+
+  // Scheduling
+  startTime: { type: Date, required: true },
+  endTime: { type: Date, required: true },
+
+  // Status
+  status: { 
+    type: String, 
+    enum: ['requested', 'approved', 'declined'], 
+    default: 'requested' 
+  },
+
+  // Jitsi meeting link
+  meetingLink: { type: String },
+
+  // Extra info
   notes: { type: String },
+
+  // Tracking
+  approvedAt: { type: Date },
   createdAt: { type: Date, default: Date.now }
 });
 
