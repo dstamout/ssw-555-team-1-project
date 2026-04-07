@@ -2,7 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import User from '../models/User.js';
-import { authenticateJWT } from '../middleware/authMiddleware.js';
+import { authenticateJWT } from '../middleware.js';
 
 const router = express.Router();
 
