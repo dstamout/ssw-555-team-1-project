@@ -1,41 +1,92 @@
 import express from 'express';
-import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import passport from 'passport';
 import User from '../models/User.js';
+import { authenticateJWT } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
-  const { email, password, role, displayName } = req.body;
-  if (!email || !password || !role) return res.status(400).json({ error: 'missing fields' });
+router.post('/signup', async (req, res) => {
   try {
-    const exists = await User.findOne({ email });
-    if (exists) return res.status(400).json({ error: 'email exists' });
-    const hashed = await bcrypt.hash(password, 10);
-    const user = new User({ email, password: hashed, role, displayName });
+    const { email, password, displayName, role } = req.body;
+    if (!email || !password) return res.status(400).json({ msg: 'Email & password required' });
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) return res.status(400).json({ msg: 'User already exists' });
+
+    const user = new User({
+      email,
+      password, // hashed automatically by your User model pre-save hook
+      displayName: displayName || 'Anonymous',
+      role: role || 'patient',
+    });
+
     await user.save();
-    res.json({ id: user._id, email: user.email, role: user.role });
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    res.json({
+      user: { id: user._id, email: user.email, displayName: user.displayName, role: user.role },
+      token
+    });
   } catch (err) {
-    res.status(500).json({ error: 'server error' });
+    res.status(500).json({ msg: 'Signup failed', error: err.message });
   }
 });
 
-router.get('/:id', async (req, res) => {
+
+router.post('/login', async (req, res) => {
   try {
-    const u = await User.findById(req.params.id).select('-password');
-    if (!u) return res.status(404).json({ error: 'not found' });
-    res.json(u);
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ msg: 'Email & password required' });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ msg: 'Invalid credentials' });
+
+    const match = await user.comparePassword(password); // uses your model method
+    if (!match) return res.status(400).json({ msg: 'Invalid credentials' });
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    res.json({
+      user: { id: user._id, email: user.email, displayName: user.displayName, role: user.role },
+      token
+    });
   } catch (err) {
-    res.status(500).json({ error: 'server error' });
+    res.status(500).json({ msg: 'Login failed', error: err.message });
   }
 });
 
-router.get('/clinicians/all', async (req, res) => {
-  try {
-    const clinicians = await User.find({ role: 'clinician' }).select('name email _id');
-    res.json(clinicians);
-  } catch (err) {
-    res.status(500).json({ error: 'server error' });
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { session: false }),
+  (req, res) => {
+    const token = jwt.sign(
+      { id: req.user.id, role: req.user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    res.json({
+      message: 'Google OAuth login successful',
+      user: req.user,
+      token
+    });
   }
+);
+
+router.get('/me', authenticateJWT, (req, res) => {
+  res.json({ user: req.user });
 });
 
 export default router;
