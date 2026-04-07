@@ -1,7 +1,8 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-import passport from '../auth.js'; // your existing Google OAuth file
+import passport from 'passport';
+import '../auth.js'; 
 
 const router = express.Router();
 
