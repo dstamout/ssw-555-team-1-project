@@ -8,10 +8,14 @@ export const getDemoPatientId = () => {
 };
 
 export const apiRequest = async (url, method = 'GET', data = null) => {
+  const authToken = localStorage.getItem('authToken');
   const options = {
     method,
     headers: { 'Content-Type': 'application/json' }
   };
+  if (authToken) {
+    options.headers.Authorization = `Bearer ${authToken}`;
+  }
   if (data !== null) {
     options.body = JSON.stringify(data);
   }

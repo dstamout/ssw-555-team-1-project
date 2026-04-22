@@ -21,7 +21,8 @@ export default function Telehealth() {
         const data = await response.json();
         setMeetingUrl(data.url);
       } else {
-        setError('Error creating video room');
+        const errorData = await response.json().catch(() => ({}));
+        setError(errorData.error || errorData.msg || 'Error creating video room');
       }
     } catch (error) {
       setError('Error: ' + error.message);
